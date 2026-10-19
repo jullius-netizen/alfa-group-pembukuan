@@ -378,7 +378,7 @@ const { data, error } = await db.auth.signInWithPassword({
 });
 if (error) throw error;
 
-$`("password").value = "";
+$("password").value = "";
 showSession(data.session);
 message("loginMessage", "");
 await loadTransactions();
@@ -391,7 +391,7 @@ setBusy("loginBtn", false);
 }
 });
 
-`$("txForm").addEventListener("submit", async event => {
+$("txForm").addEventListener("submit", async event => {
 event.preventDefault();
 if (busy) return;
 
