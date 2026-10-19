@@ -373,9 +373,9 @@ message("loginMessage", "Sedang masuk...");
 
 try {
 const { data, error } = await db.auth.signInWithPassword({
-email:  ("password").value
+  email: $("email").value.trim(),
+  password: $("password").value
 });
-
 if (error) throw error;
 
 $`("password").value = "";
