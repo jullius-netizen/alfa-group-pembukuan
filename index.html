@@ -352,18 +352,18 @@ await loadTransactions();
 
 actionCell.appendChild(deleteBtn);
 tr.appendChild(actionCell);
-`$("txList").appendChild(tr);
+$("txList").appendChild(tr);
 }
 
- ("totalExpense").textContent = rupiah(expense);
-$`("totalBalance").textContent = rupiah(income - expense);
+$("totalExpense").textContent = rupiah(expense);
+$("totalBalance").textContent = rupiah(income - expense);
 
 message("listMessage", data.length
 ? "Jumlah transaksi: " + data.length
 : "Belum ada transaksi.");
 }
 
-`$("loginForm").addEventListener("submit", async event => {
+$("loginForm").addEventListener("submit", async event => {
 event.preventDefault();
 if (busy) return;
 
@@ -435,7 +435,7 @@ setBusy("saveBtn", false);
 }
 });
 
-$`("logout").addEventListener("click", async () => {
+$("logout").addEventListener("click", async () => {
 const { error } = await db.auth.signOut();
 
 if (error) {
@@ -445,11 +445,11 @@ return;
 
 showSession(null);
 $("password").value = ""; $("txForm").reset();
-`$("txList").replaceChildren();
+$("txList").replaceChildren();
 message("loginMessage", "Kamu sudah keluar.");
 });
 
-$`("refreshBtn").addEventListener("click", loadTransactions);
+$("refreshBtn").addEventListener("click", loadTransactions);
 
 async function startApp() {
 `$("tanggal").value = today();
