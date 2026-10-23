@@ -247,7 +247,7 @@ Muat Ulang Data
 const SUPABASE_URL = "https://oresxisdexqymuqdbbcl.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mlPksSDsuW4YMiputDkXmw_mdwXuleq";
 
-const $` = id => document.getElementById(id);
+const $ = id => document.getElementById(id);
 
 const rupiah = value =>
 new Intl.NumberFormat("id-ID", {
@@ -266,25 +266,25 @@ let db = null;
 let busy = false;
 
 function message(id, text) {
-`$(id).textContent = text || "";
+$(id).textContent = text || "";
 }
 
 function setBusy(buttonId, value) {
-$`(buttonId).disabled = value;
+$(buttonId).disabled = value;
 }
 
 function showSession(session) {
 $("login").classList.toggle("hidden", !!session); $("app").classList.toggle("hidden", !session);
 
 if (session) {
-`$("who").textContent = "Login sebagai: " +
+$("who").textContent = "Login sebagai: " +
 (session.user.email || "Pengguna");
 }
 }
 
 async function loadTransactions() {
 message("listMessage", "Memuat transaksi...");
-$`("txList").replaceChildren();
+$("txList").replaceChildren();
 
 const { data, error } = await db
 .from("transaksi")
@@ -452,7 +452,7 @@ message("loginMessage", "Kamu sudah keluar.");
 $("refreshBtn").addEventListener("click", loadTransactions);
 
 async function startApp() {
-`$("tanggal").value = today();
+$("tanggal").value = today();
 
 if (
 SUPABASE_URL.includes("https://oresxisdexqymuqdbbcl.supabase.co") ||
