@@ -1,490 +1,208 @@
-<!DOCTYPE html>
+<<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ALFA GROUP Pembukuan Keuangan</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-* { box-sizing: border-box; }
-body {
-margin: 0;
-padding: 16px;
-font-family: Arial, sans-serif;
-background: #f1f5f9;
-color: #172033;
-}
-.container { max-width: 850px; margin: auto; }
-header {
-background: #123b68;
-color: white;
-padding: 22px 16px;
-border-radius: 14px;
-margin-bottom: 18px;
-}
-h1 { font-size: 22px; margin: 0 0 6px; }
-h2 { font-size: 18px; margin-top: 0; }
-.muted { font-size: 13px; opacity: .85; }
-.card {
-background: white;
-padding: 18px;
-margin-bottom: 16px;
-border-radius: 12px;
-box-shadow: 0 2px 8px #0000000a;
-}
-label {
-display: block;
-font-size: 14px;
-font-weight: bold;
-margin: 12px 0 6px;
-}
-input, select, button {
-width: 100%;
-padding: 12px;
-border-radius: 8px;
-font-size: 15px;
-}
-input, select {
-border: 1px solid #cbd5e1;
-background: white;
-}
-button {
-border: 0;
-background: #1769aa;
-color: white;
-font-weight: bold;
-margin-top: 14px;
-cursor: pointer;
-}
-button:disabled { opacity: .6; }
-.secondary { background: #475569; }
-.danger {
-background: #b91c1c;
-padding: 7px 10px;
-width: auto;
-margin: 0;
-font-size: 12px;
-}
-.hidden { display: none !important; }
-.message {
-margin-top: 12px;
-font-size: 14px;
-overflow-wrap: anywhere;
-}
-.totals {
-display: grid;
-grid-template-columns: repeat(3, minmax(0, 1fr));
-gap: 9px;
-margin-bottom: 16px;
-}
-.total {
-background: white;
-padding: 13px 9px;
-border-radius: 10px;
-overflow-wrap: anywhere;
-}
-.total small { display: block; color: #64748b; }
-.total strong {
-display: block;
-font-size: 14px;
-margin-top: 7px;
-}
-.income { color: #15803d; }
-.expense { color: #b91c1c; }
-.table-wrap { overflow-x: auto; }
-table {
-border-collapse: collapse;
-width: 100%;
-min-width: 650px;
-font-size: 13px;
-}
-th, td {
-padding: 10px;
-border-bottom: 1px solid #e2e8f0;
-text-align: left;
-}
-th { background: #f8fafc; }
-@media (max-width: 420px) {
-body { padding: 10px; }
-.totals { gap: 5px; }
-.total { padding: 10px 6px; }
-.total strong { font-size: 12px; }
-}
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#172033;background:#f3f6fb}
+*{box-sizing:border-box}body{margin:0}header{background:#123b68;color:white;padding:18px 16px}
+header h1{font-size:1.25rem;margin:0 0 4px}header p{margin:0;font-size:.9rem;opacity:.9}
+main{max-width:1000px;margin:auto;padding:16px;display:grid;gap:14px}
+.card{background:white;border:1px solid #dbe3ef;border-radius:14px;padding:16px;box-shadow:0 3px 12px #12294a0a}
+h2{font-size:1.05rem;margin:0 0 12px}.muted{color:#64748b;font-size:.9rem}
+label{display:block;font-size:.9rem;font-weight:600;margin:10px 0 5px}
+input,select,button{font:inherit;width:100%;padding:11px;border-radius:9px;border:1px solid #cbd5e1}
+button{border:0;background:#174f86;color:white;font-weight:700;margin-top:12px;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}.secondary{background:#e8eef6;color:#17324d}.danger{background:#b42318}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.balance{background:#eef5ff;border-radius:10px;padding:13px}.balance span{display:block;color:#52647c;font-size:.85rem}.balance strong{display:block;font-size:1.1rem;margin-top:5px;overflow-wrap:anywhere}
+.hidden{display:none!important}.msg{font-size:.9rem;margin-top:10px;overflow-wrap:anywhere}.ok{color:#087443}.err{color:#b42318}
+.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:650px;font-size:.88rem}th,td{padding:9px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#f8fafc}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}main{padding:10px}.card{padding:13px}}
 </style>
 </head>
-
 <body>
-<div class="container">
-
-<header>
-<h1>ALFA GROUP</h1>
-<div>Pembukuan Keuangan</div>
-<div class="muted">Catat dan pantau transaksi usaha</div>
-</header>
-
+<header><h1>ALFA GROUP Pembukuan Keuangan</h1><p>Pembukuan online — data tersimpan di Supabase</p></header>
+<main>
 <section id="login" class="card">
 <h2>Login Pengguna</h2>
-
+<p class="muted">Gunakan email dan kata sandi pengguna Supabase yang sudah terdaftar.</p>
 <form id="loginForm">
-<label for="email">Email</label>
-<input id="email" type="email" autocomplete="username"
-placeholder="Masukkan email" required>
-
-<label for="password">Password</label>
-<input id="password" type="password"
-autocomplete="current-password"
-placeholder="Masukkan password" required>
-
+<label for="email">Email</label><input id="email" type="email" autocomplete="username" required>
+<label for="password">Kata sandi</label><input id="password" type="password" autocomplete="current-password" required>
 <button id="loginBtn" type="submit">Masuk</button>
+<div id="loginMessage" class="msg" role="status" aria-live="polite"></div>
 </form>
-
-<div id="loginMessage" class="message" role="status"></div>
 </section>
 
 <section id="app" class="hidden">
-
 <div class="card">
-<div id="who"></div>
-<button id="logout" class="secondary" type="button">Keluar</button>
+<div class="actions"><div><h2>Ringkasan Saldo</h2><div class="muted">Saldo dihitung dari transaksi yang tersimpan.</div></div><button id="logout" class="secondary" type="button">Keluar</button></div>
+<div class="grid">
+<div class="balance"><span>Saldo Utama</span><strong id="totalBalance">Rp0</strong></div>
+<div class="balance"><span>Saldo Cash</span><strong id="cashBalance">Rp0</strong></div>
+<div class="balance"><span>Saldo Debit</span><strong id="debitBalance">Rp0</strong></div>
+<div class="balance"><span>Total Pemasukan</span><strong id="totalIncome">Rp0</strong></div>
+<div class="balance"><span>Total Pengeluaran</span><strong id="totalExpense">Rp0</strong></div>
+<div class="balance"><span>Pengguna</span><strong id="who">-</strong></div>
 </div>
-
-<div class="totals">
-<div class="total">
-<small>Pemasukan</small>
-<strong id="totalIncome" class="income">Rp0</strong>
-</div>
-<div class="total">
-<small>Pengeluaran</small>
-<strong id="totalExpense" class="expense">Rp0</strong>
-</div>
-<div class="total">
-<small>Saldo</small>
-<strong id="totalBalance">Rp0</strong>
-</div>
+<div id="listMessage" class="msg" role="status"></div>
 </div>
 
 <div class="card">
 <h2>Tambah Transaksi</h2>
-
 <form id="txForm">
-<label for="tanggal">Tanggal</label>
-<input id="tanggal" type="date" required>
-
-<label for="jenis">Jenis transaksi</label>
-<select id="jenis" required>
-<option value="Pemasukan">Pemasukan</option>
-<option value="Pengeluaran">Pengeluaran</option>
-</select>
-
-<label for="keterangan">Keterangan</label>
-<input id="keterangan" type="text"
-placeholder="Contoh: Penjualan tiket" required>
-
-<label for="jumlah">Jumlah (Rp)</label>
-<input id="jumlah" type="number" min="1" step="any"
-placeholder="Masukkan jumlah" required>
-
-<label for="akun">Akun</label>
-<input id="akun" type="text"
-placeholder="Contoh: Kas atau Bank">
-
-<label for="kategori">Kategori</label>
-<input id="kategori" type="text"
-placeholder="Contoh: Tiket kapal">
-
-<label for="metode">Metode pembayaran</label>
-<select id="metode">
-<option value="Tunai">Tunai</option>
-<option value="Transfer">Transfer</option>
-<option value="QRIS">QRIS</option>
-<option value="Lainnya">Lainnya</option>
-</select>
-
-<label for="nomor_bukti">Nomor bukti transaksi</label>
-<input id="nomor_bukti" type="text"
-placeholder="Nomor nota atau bukti (opsional)">
-
+<label for="tanggal">Tanggal</label><input id="tanggal" type="date" required>
+<label for="keterangan">Keterangan</label><input id="keterangan" type="text" maxlength="200" required placeholder="Contoh: pembayaran tiket">
+<div class="grid">
+<div><label for="jenis">Jenis</label><select id="jenis" required><option value="Pemasukan">Pemasukan</option><option value="Pengeluaran">Pengeluaran</option></select></div>
+<div><label for="akun">Akun</label><select id="akun" required><option value="CASH">CASH</option><option value="DEBIT">DEBIT</option></select></div>
+</div>
+<label for="jumlah">Jumlah (Rp)</label><input id="jumlah" type="number" min="1" step="1" required inputmode="numeric">
+<label for="nomor_bukti">Nomor bukti (opsional)</label><input id="nomor_bukti" type="text" maxlength="100">
 <button id="saveBtn" type="submit">Simpan Transaksi</button>
+<div id="txMessage" class="msg" role="status" aria-live="polite"></div>
 </form>
-
-<div id="txMessage" class="message" role="status"></div>
 </div>
 
 <div class="card">
-<h2>Riwayat Transaksi</h2>
-<button id="refreshBtn" class="secondary" type="button">
-Muat Ulang Data
-</button>
-<div id="listMessage" class="message" role="status"></div>
-
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-<th>Tanggal</th>
-<th>Keterangan</th>
-<th>Jenis</th>
-<th>Jumlah</th>
-<th>Akun</th>
-<th>Bukti</th>
-<th>Aksi</th>
-</tr>
-</thead>
-<tbody id="txList"></tbody>
-</table>
+<div class="actions"><h2>Riwayat Transaksi</h2><button id="refreshBtn" class="secondary" type="button">Muat Ulang</button></div>
+<div class="actions"><button id="exportBtn" type="button">Unduh CSV untuk Excel</button><button id="logout2" class="secondary" type="button">Keluar</button></div>
+<div class="tablewrap"><table><thead><tr><th>Tanggal</th><th>Keterangan</th><th>Jenis</th><th>Jumlah</th><th>Akun</th><th>No. Bukti</th><th>Aksi</th></tr></thead><tbody id="txList"></tbody></table></div>
 </div>
-</div>
-
 </section>
-</div>
+</main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
 
-/* MASUKKAN URL DAN PUBLISHABLE KEY SUPABASE MILIK KAMU */
+/* GANTI DUA NILAI INI DENGAN URL DAN PUBLISHABLE KEY SUPABASE MILIK ANDA */
 const SUPABASE_URL = "https://oresxisdexqymuqdbbcl.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mlPksSDsuW4YMiputDkXmw_mdwXuleq";
 
 const $ = id => document.getElementById(id);
+const rupiah = value => new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(Number(value)||0);
+const today = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+let db=null, busy=false, transactions=[];
 
-const rupiah = value =>
-new Intl.NumberFormat("id-ID", {
-style: "currency",
-currency: "IDR",
-maximumFractionDigits: 0
-}).format(Number(value) || 0);
-
-const today = () => {
-const d = new Date();
-d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-return d.toISOString().slice(0, 10);
-};
-
-let db = null;
-let busy = false;
-
-function message(id, text) {
-$(id).textContent = text || "";
+function message(id,text,kind="") {
+  const el=$(id); if(!el) return;
+  el.textContent=text||""; el.className="msg"+(kind?" "+kind:"");
 }
-
-function setBusy(buttonId, value) {
-$(buttonId).disabled = value;
+function setBusy(id,value){const el=$(id);if(el)el.disabled=value;}
+function showSession(session){
+  $("login").classList.toggle("hidden",!!session);
+  $("app").classList.toggle("hidden",!session);
+  if(session) $("who").textContent=session.user.email||"Pengguna";
 }
-
-function showSession(session) {
-$("login").classList.toggle("hidden", !!session); $("app").classList.toggle("hidden", !session);
-
-if (session) {
-$("who").textContent = "Login sebagai: " +
-(session.user.email || "Pengguna");
+function explainError(error){
+  return error && (error.message||error.error_description||error.msg) ? (error.message||error.error_description||error.msg) : String(error||"Kesalahan tidak diketahui");
 }
+async function loadTransactions(){
+  message("listMessage","Memuat transaksi...");
+  $("txList").replaceChildren();
+  const {data,error}=await db.from("transaksi").select("*").order("tanggal",{ascending:false});
+  if(error){message("listMessage","Gagal memuat transaksi: "+explainError(error),"err");return;}
+  transactions=data||[];
+  let income=0,expense=0,cash=0,debit=0;
+  for(const tx of transactions){
+    const amount=Number(tx.jumlah)||0;
+    const kind=String(tx.jenis||"").toLowerCase();
+    const account=String(tx.akun||"").toUpperCase();
+    if(kind==="pemasukan") income+=amount; else expense+=amount;
+    if(account==="CASH") cash+=(kind==="pemasukan"?amount:-amount);
+    if(account==="DEBIT") debit+=(kind==="pemasukan"?amount:-amount);
+    const tr=document.createElement("tr");
+    for(const value of [tx.tanggal||"-",tx.keterangan||"-",tx.jenis||"-",rupiah(amount),tx.akun||"-",tx.nomor_bukti||"-"]){
+      const td=document.createElement("td");td.textContent=value;tr.appendChild(td);
+    }
+    const action=document.createElement("td"),btn=document.createElement("button");
+    btn.type="button";btn.className="danger";btn.textContent="Hapus";btn.style.marginTop="0";btn.style.width="auto";
+    btn.addEventListener("click",async()=>{
+      if(!confirm("Yakin ingin menghapus transaksi ini?"))return;
+      btn.disabled=true;
+      const {error:delError}=await db.from("transaksi").delete().eq("id",tx.id);
+      if(delError){alert("Gagal menghapus: "+explainError(delError));btn.disabled=false;return;}
+      await loadTransactions();
+    });
+    action.appendChild(btn);tr.appendChild(action);$("txList").appendChild(tr);
+  }
+  $("totalIncome").textContent=rupiah(income);
+  $("totalExpense").textContent=rupiah(expense);
+  $("cashBalance").textContent=rupiah(cash);
+  $("debitBalance").textContent=rupiah(debit);
+  $("totalBalance").textContent=rupiah(cash+debit);
+  message("listMessage",transactions.length?"Jumlah transaksi: "+transactions.length:"Belum ada transaksi.","ok");
 }
-
-async function loadTransactions() {
-message("listMessage", "Memuat transaksi...");
-$("txList").replaceChildren();
-
-const { data, error } = await db
-.from("transaksi")
-.select("*")
-.order("tanggal", { ascending: false });
-
-if (error) {
-message("listMessage", "Gagal memuat data: " + error.message);
-return;
+function exportCSV(){
+  const headers=["Tanggal","Keterangan","Jenis","Jumlah","Akun","Nomor Bukti"];
+  const rows=transactions.map(t=>[t.tanggal,t.keterangan,t.jenis,t.jumlah,t.akun,t.nomor_bukti].map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(","));
+  const csv="\uFEFF"+[headers.map(v=>'"'+v+'"').join(","),...rows].join("\r\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="ALFA-GROUP-Pembukuan.csv";a.click();URL.revokeObjectURL(url);
 }
-
-let income = 0;
-let expense = 0;
-
-for (const tx of data) {
-const amount = Number(tx.jumlah) || 0;
-
-if (String(tx.jenis).toLowerCase() === "pemasukan") {
-income += amount;
-} else {
-expense += amount;
+async function doLogout(){
+  if(!db)return;
+  const {error}=await db.auth.signOut();
+  if(error){alert("Gagal keluar: "+explainError(error));return;}
+  showSession(null);$("txForm").reset();$("txList").replaceChildren();message("loginMessage","Anda sudah keluar.");
 }
-
-const tr = document.createElement("tr");
-
-const values = [
-tx.tanggal || "-",
-tx.keterangan || "-",
-tx.jenis || "-",
-rupiah(amount),
-tx.akun || "-",
-tx.nomor_bukti || "-"
- ];
-
-for (const value of values) {
-const td = document.createElement("td");
-td.textContent = value;
-tr.appendChild(td);
+function wireEvents(){
+  $("loginForm").addEventListener("submit",async event=>{
+    event.preventDefault();if(busy)return;
+    if(!db){message("loginMessage","Koneksi belum siap. Muat ulang halaman.","err");return;}
+    busy=true;setBusy("loginBtn",true);message("loginMessage","Sedang masuk...");
+    try{
+      const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+      if(error)throw error;
+      $("password").value="";showSession(data.session);message("loginMessage","");
+      await loadTransactions();
+    }catch(error){message("loginMessage","Login gagal: "+explainError(error),"err");}
+    finally{busy=false;setBusy("loginBtn",false);}
+  });
+  $("txForm").addEventListener("submit",async event=>{
+    event.preventDefault();if(busy)return;
+    busy=true;setBusy("saveBtn",true);message("txMessage","Menyimpan transaksi...");
+    try{
+      const amount=Number($("jumlah").value);
+      if(!Number.isFinite(amount)||amount<=0)throw new Error("Jumlah harus lebih dari nol.");
+      const record={tanggal:$("tanggal").value,keterangan:$("keterangan").value.trim(),jenis:$("jenis").value,jumlah:amount,akun:$("akun").value,nomor_bukti:$("nomor_bukti").value.trim()||null};
+      const {error}=await db.from("transaksi").insert(record);
+      if(error)throw error;
+      message("txMessage","Transaksi berhasil disimpan.","ok");
+      $("txForm").reset();$("tanggal").value=today();await loadTransactions();
+    }catch(error){message("txMessage","Gagal menyimpan: "+explainError(error),"err");}
+    finally{busy=false;setBusy("saveBtn",false);}
+  });
+  $("logout").addEventListener("click",doLogout);
+  $("logout2").addEventListener("click",doLogout);
+  $("refreshBtn").addEventListener("click",loadTransactions);
+  $("exportBtn").addEventListener("click",exportCSV);
 }
-
-const actionCell = document.createElement("td");
-const deleteBtn = document.createElement("button");
-deleteBtn.type = "button";
-deleteBtn.className = "danger";
-deleteBtn.textContent = "Hapus";
-
-deleteBtn.addEventListener("click", async () => {
-if (!confirm("Hapus transaksi ini?")) return;
-
-deleteBtn.disabled = true;
-
-const { error: deleteError } = await db
-.from("transaksi")
-.delete()
-.eq("id", tx.id);
-
-if (deleteError) {
-alert("Gagal menghapus: " + deleteError.message);
-deleteBtn.disabled = false;
-return;
+async function startApp(){
+  $("tanggal").value=today();
+  wireEvents();
+  if(SUPABASE_URL.includes("https://oresxisdexqymuqdbbcl.supabase.co")||SUPABASE_KEY.includes("sb_publishable_mlPksSDsuW4YMiputDkXmw_mdwXuleq")){
+    message("loginMessage","Konfigurasi Supabase belum diisi di bagian atas script.","err");
+    return;
+  }
+  if(!window.supabase||!window.supabase.createClient){
+    message("loginMessage","Library Supabase gagal dimuat. Periksa koneksi internet lalu muat ulang.","err");
+    return;
+  }
+  try{
+    db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    const {data,error}=await db.auth.getSession();
+    if(error)throw error;
+    showSession(data.session);
+    if(data.session)await loadTransactions();
+    db.auth.onAuthStateChange((_event,session)=>showSession(session));
+  }catch(error){message("loginMessage","Gagal memulai aplikasi: "+explainError(error),"err");}
 }
-
-await loadTransactions();
-});
-
-actionCell.appendChild(deleteBtn);
-tr.appendChild(actionCell);
-$("txList").appendChild(tr);
-}
-
-$("totalExpense").textContent = rupiah(expense);
-$("totalBalance").textContent = rupiah(income - expense);
-
-message("listMessage", data.length
-? "Jumlah transaksi: " + data.length
-: "Belum ada transaksi.");
-}
-
-$("loginForm").addEventListener("submit", async event => {
-event.preventDefault();
-if (busy) return;
-
-busy = true;
-setBusy("loginBtn", true);
-message("loginMessage", "Sedang masuk...");
-
-try {
-const { data, error } = await db.auth.signInWithPassword({
-  email: $("email").value.trim(),
-  password: $("password").value
-});
-if (error) throw error;
-
-$("password").value = "";
-showSession(data.session);
-message("loginMessage", "");
-await loadTransactions();
-
-} catch (error) {
-message("loginMessage", "Login gagal: " + error.message);
-} finally {
-busy = false;
-setBusy("loginBtn", false);
-}
-});
-
-$("txForm").addEventListener("submit", async event => {
-event.preventDefault();
-if (busy) return;
-
-busy = true;
-setBusy("saveBtn", true);
-message("txMessage", "Menyimpan transaksi...");
-
-try {
-const { data: sessionData, error: sessionError } =
-await db.auth.getSession();
-
-if (sessionError) throw sessionError;
-if (!sessionData.session) throw new Error("Silakan login kembali.");
-
-const amount = Number($`("jumlah").value);
-
-if (!Number.isFinite(amount) || amount <= 0) {
-throw new Error("Jumlah harus lebih dari nol.");
-}
-
-const record = {
-tanggal: $("tanggal").value, keterangan: $("keterangan").value.trim(),
-jenis: $("jenis").value, jumlah: amount, akun: $("akun").value.trim(),
-kategori: $("kategori").value.trim(), metode: $("metode").value,
-nomor_bukti: `$("nomor_bukti").value.trim()
-};
-
-const { error } = await db.from("transaksi").insert(record);
-
-if (error) throw error;
-
- ("tanggal").value = today();
-message("txMessage", "Transaksi berhasil disimpan.");
-await loadTransactions();
-
-} catch (error) {
-message("txMessage", "Gagal menyimpan: " + error.message);
-} finally {
-busy = false;
-setBusy("saveBtn", false);
-}
-});
-
-$("logout").addEventListener("click", async () => {
-const { error } = await db.auth.signOut();
-
-if (error) {
-alert("Gagal keluar: " + error.message);
-return;
-}
-
-showSession(null);
-$("password").value = ""; $("txForm").reset();
-$("txList").replaceChildren();
-message("loginMessage", "Kamu sudah keluar.");
-});
-
-$("refreshBtn").addEventListener("click", loadTransactions);
-
-async function startApp() {
-$("tanggal").value = today();
-
-if (
-  !
-SUPABASE_URL.includes("https://oresxisdexqymuqdbbcl.supabase.co") ||
-SUPABASE_KEY.includes("sb_publishable_mlPksSDsuW4YMiputDkXmw_mdwXuleq")
-) {
-message("loginMessage",
-"Konfigurasi belum diisi. Masukkan URL dan Publishable Key Supabase.");
-$("loginBtn").disabled = true;
-return;
-}
-
-try {
-db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-const { data, error } = await db.auth.getSession();
-if (error) throw error;
-
-showSession(data.session);
-
-if (data.session) await loadTransactions();
-
-db.auth.onAuthStateChange((_event, session) => {
-showSession(session);
-});
-
-} catch (error) {
-message("loginMessage", "Gagal memulai aplikasi: " + error.message);
-}
-}
-
-startApp();
+document.addEventListener("DOMContentLoaded",startApp);
 </script>
 </body>
- </html>
+</html>
